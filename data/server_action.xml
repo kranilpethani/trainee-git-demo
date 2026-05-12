@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<odoo>
+
+    <record id="sale_order_create_timesheet_action"
+            model="ir.actions.server">
+
+        <field name="name">Generate Timesheet Update</field>
+
+        <field name="model_id" ref="sale.model_sale_order"/>
+
+        <field name="binding_model_id"
+               ref="sale.model_sale_order"/>
+
+        <field name="binding_view_types">list,form</field>
+
+        <field name="state">code</field>
+
+        <field name="code"><![CDATA[
+for sale_order in records:
+
+    if not sale_order.project_id:
+        continue
+
+    sale_order.write({
+        'timesheet_update_ids': [(5, 0, 0)]
+    })
+
+    tasks = env['project.task'].sudo().search([
+        ('sale_line_id.order_id', '=', sale_order.id)
+    ])
+
+    for task in tasks:
+
+        start_date = sale_order.start_date
+        end_date = sale_order.stop_date
+
+        period_hours = 0.0
+
+        if start_date and end_date:
+
+            timesheets = env['account.analytic.line'].sudo().search([
+                ('task_id', '=', task.id),
+                ('date', '>=', start_date),
+                ('date', '<=', end_date),
+            ])
+
+            period_hours = sum(timesheets.mapped('unit_amount'))
+
+        if period_hours != 0:
+
+            env['timesheet.update'].sudo().create({
+                'order_id': sale_order.id,
+                'task_name': task.name,
+                'effective_hours': task.effective_hours,
+                'parent_id': task.parent_id.id,
+                'allocation_source': 'sale_order',
+                'source_allocated_hours': task.allocated_hours,
+                'allocated_hours': task.allocated_hours,
+                'total_used_hours': period_hours,
+                'used_last_month': task.effective_hours - period_hours,
+                'used_hours_period': task.effective_hours,
+                'remaining_hours_custom': task.allocated_hours - task.effective_hours,
+            })
+
+action = {
+    'type': 'ir.actions.client',
+    'tag': 'reload',
+}
+]]></field>
+
+    </record>
+
+</odoo>

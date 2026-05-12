@@ -1,0 +1,199 @@
+<odoo>
+
+    <template id="sale_timesheet_report">
+
+        <t t-call="web.html_container">
+
+            <t t-foreach="docs" t-as="o">
+
+                <t t-call="web.external_layout">
+
+                    <div class="page">
+
+                        <h2>
+                            Timesheet Report
+                        </h2>
+
+                        <p>
+                            <strong>Sale Order:</strong>
+                            <span t-field="o.name"/>
+                        </p>
+
+                        <p>
+                            <strong>Customer:</strong>
+                            <span t-field="o.partner_id"/>
+                        </p>
+
+                        <br/>
+
+                        <table class="table table-sm"
+                               style="width:100%;
+                                      border-collapse:collapse;">
+
+                            <thead>
+
+                                <tr style="background:#f2f2f2;">
+
+                                    <th>Task Name</th>
+
+                                    <th>Parent Task</th>
+
+                                    <th>Allocation Source</th>
+
+                                    <th style="text-align:right;">
+                                        Source Allocated
+                                    </th>
+
+                                    <th style="text-align:right;">
+                                        Allocated Hours
+                                    </th>
+
+                                    <th style="text-align:right;">
+                                        Total Used Hours
+                                    </th>
+
+                                    <th style="text-align:right;">
+                                        Total Used Labor
+                                    </th>
+
+                                    <th style="text-align:right;">
+                                        Used Hours
+                                    </th>
+
+                                    <th style="text-align:right;">
+                                        Remaining Hours
+                                    </th>
+
+                                </tr>
+
+                            </thead>
+
+                            <tbody>
+
+                                <t t-set="total_source"
+                                   t-value="0"/>
+
+                                <t t-set="total_allocated"
+                                   t-value="0"/>
+
+                                <t t-set="total_used"
+                                   t-value="0"/>
+
+                                <t t-set="total_last"
+                                   t-value="0"/>
+
+                                <t t-set="total_period"
+                                   t-value="0"/>
+
+                                <t t-set="total_remaining"
+                                   t-value="0"/>
+
+                                <tr t-foreach="o.timesheet_update_ids"
+                                    t-as="line">
+
+                                    <t t-set="total_source"
+                                       t-value="total_source + line.source_allocated_hours"/>
+
+                                    <t t-set="total_allocated"
+                                       t-value="total_allocated + line.allocated_hours"/>
+
+                                    <t t-set="total_used"
+                                       t-value="total_used + line.total_used_hours"/>
+
+                                    <t t-set="total_last"
+                                       t-value="total_last + line.used_last_month"/>
+
+                                    <t t-set="total_period"
+                                       t-value="total_period + line.used_hours_period"/>
+
+                                    <t t-set="total_remaining"
+                                       t-value="total_remaining + line.remaining_hours_custom"/>
+
+                                    <td>
+                                        <span t-esc="line.task_name"/>
+                                    </td>
+
+                                    <td>
+                                        <span t-esc="line.parent_id.name if line.parent_id else ''"/>
+                                    </td>
+
+                                    <td>
+                                        <span t-esc="line.allocation_source"/>
+                                    </td>
+
+                                    <td style="text-align:right;">
+                                        <span t-esc="'%.2f' % line.source_allocated_hours"/>
+                                    </td>
+
+                                    <td style="text-align:right;">
+                                        <span t-esc="'%.2f' % line.allocated_hours"/>
+                                    </td>
+
+                                    <td style="text-align:right;">
+                                        <span t-esc="'%.2f' % line.total_used_hours"/>
+                                    </td>
+
+                                    <td style="text-align:right;">
+                                        <span t-esc="'%.2f' % line.used_last_month"/>
+                                    </td>
+
+                                    <td style="text-align:right;">
+                                        <span t-esc="'%.2f' % line.used_hours_period"/>
+                                    </td>
+
+                                    <td style="text-align:right;">
+                                        <span t-esc="'%.2f' % line.remaining_hours_custom"/>
+                                    </td>
+
+                                </tr>
+
+                            </tbody>
+
+                            <tfoot>
+
+                                <tr style="font-weight:bold;
+                                           background:#fafafa;">
+
+                                    <td colspan="3"></td>
+
+                                    <td style="text-align:right;">
+                                        <span t-esc="'%.2f' % total_source"/>
+                                    </td>
+
+                                    <td style="text-align:right;">
+                                        <span t-esc="'%.2f' % total_allocated"/>
+                                    </td>
+
+                                    <td style="text-align:right;">
+                                        <span t-esc="'%.2f' % total_used"/>
+                                    </td>
+
+                                    <td style="text-align:right;">
+                                        <span t-esc="'%.2f' % total_last"/>
+                                    </td>
+
+                                    <td style="text-align:right;">
+                                        <span t-esc="'%.2f' % total_period"/>
+                                    </td>
+
+                                    <td style="text-align:right;">
+                                        <span t-esc="'%.2f' % total_remaining"/>
+                                    </td>
+
+                                </tr>
+
+                            </tfoot>
+
+                        </table>
+
+                    </div>
+
+                </t>
+
+            </t>
+
+        </t>
+
+    </template>
+
+</odoo>

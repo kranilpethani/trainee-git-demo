@@ -1,0 +1,27 @@
+<odoo>
+
+    <record model="res.groups.privilege" id="res_groups_privilege_custom_sale">
+            <field name="name">Approval</field>
+            <field name="sequence">12</field>
+            <field name="category_id" ref="base.module_category_sales"/>
+        </record>
+
+    <record id="group_sale_custom_user" model="res.groups">
+        <field name="name">User</field>
+        <field name="privilege_id" ref="res_groups_privilege_custom_sale"/>
+    </record>
+
+    <record id="group_sale_custom_manager" model="res.groups">
+        <field name="name">Manager</field>
+        <field name="privilege_id" ref="res_groups_privilege_custom_sale"/>
+    </record>
+
+    <record id="group_sale_custom_boss" model="res.groups">
+        <field name="name">Boss</field>
+        <field name="implied_ids" eval="[(4, ref('group_sale_custom_manager'))]"/>
+        <field name="privilege_id" ref="res_groups_privilege_custom_sale"/>
+    </record>
+
+
+
+</odoo>
