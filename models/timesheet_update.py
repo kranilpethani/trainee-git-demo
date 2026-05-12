@@ -90,3 +90,4 @@ class TimesheetUpdate(models.Model):
             record.period_used_hours = sum(
                 timesheets.mapped('unit_amount')
             )
+            print(record.period_used_hours)
